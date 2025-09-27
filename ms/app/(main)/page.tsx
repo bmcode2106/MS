@@ -1,25 +1,13 @@
-// file: app/page.tsx
+// file: app/(main)/page.tsx
 
 import HeroSection from "@/components/HeroSection";
 import PlayerTester from "@/components/PlayerTester";
+import DocumentationSection from "@/components/DocumentationSection";
 
-// ... (kode fungsi getPosters tetap sama, tidak perlu diubah) ...
+interface ApiVideo { id: number; poster_url: string; category: string[]; }
+interface ApiResponse { list: ApiVideo[]; }
+function shuffleArray(array: any[]) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [array[i], array[j]] = [array[j], array[i]]; } return array; }
 
-interface ApiVideo {
-  id: number;
-  poster_url: string;
-  category: string[];
-}
-interface ApiResponse {
-  list: ApiVideo[];
-}
-function shuffleArray(array: any[]) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-}
 async function getPosters() {
   try {
     const keyword = "Big Breasts";
@@ -41,11 +29,10 @@ export default async function Home() {
   const initialPosters = await getPosters();
 
   return (
-    // HAPUS TAG <main> DAN GUNAKAN FRAGMENT <>
     <>
       <HeroSection initialPosters={initialPosters} />
       <PlayerTester />
-      <div id="documentation" className="h-screen"></div>
+      <DocumentationSection />
     </>
   );
 }
