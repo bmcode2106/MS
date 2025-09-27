@@ -1,5 +1,60 @@
 @import "tailwindcss";
 
+/*
+  ==========================================
+  CORRECTED MARQUEE ANIMATION DEFINITIONS
+  ==========================================
+*/
+@keyframes marquee-vertical {
+  from { transform: translateY(0); }
+  /* This moves the content up by exactly half its height, creating a seamless loop */
+  to { transform: translateY(-50%); }
+}
+
+@layer utilities {
+  .animate-marquee-up {
+    /* Plays the animation normally (results in upward motion) */
+    animation: marquee-vertical var(--duration, 60s) linear infinite normal;
+  }
+  .animate-marquee-down {
+    /* Plays the animation in reverse (results in downward motion) */
+    animation: marquee-vertical var(--duration, 60s) linear infinite reverse;
+  }
+}
+/*
+  ==========================================
+  END OF ANIMATION DEFINITIONS
+  ==========================================
+*/
+
+
+/*
+  ==========================================
+  CUSTOM COMPONENT STYLES
+  ==========================================
+*/
+@layer components {
+  /* Styles for the Player Demo tabs (if needed later) */
+  .tab-button {
+    @apply px-4 sm:px-8 py-2 rounded-md font-medium text-sm transition-all duration-300 flex items-center gap-2;
+  }
+  /* Styles for the Player Demo input fields (if needed later) */
+  .input-style {
+    @apply h-10 w-full rounded-md px-3 py-2 text-base bg-zinc-700 border border-zinc-600 text-white text-center font-mono placeholder-zinc-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:outline-none;
+  }
+}
+/*
+  ==========================================
+  END OF CUSTOM COMPONENT STYLES
+  ==========================================
+*/
+
+
+/*
+  ==========================================
+  DEFAULT THEME & FONT SETUP
+  ==========================================
+*/
 :root {
   --background: #ffffff;
   --foreground: #171717;

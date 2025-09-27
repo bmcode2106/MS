@@ -1,0 +1,7 @@
+{
+  "ads": {
+    "enabled": true,
+    "clicks_needed": 1,
+    "ad_tag_script_url": "https://cdn.propellerads.com/your_script.js"
+  }
+}
