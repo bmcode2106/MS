@@ -8,6 +8,15 @@ const nextConfig = {
         port: '',
         pathname: '/v/**',
       },
+      // TAMBAHKAN DOMAIN BARU DI SINI
+      {
+        protocol: 'https',
+        hostname: 'blog.pinwheel.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'upload.wikimedia.org',
+      },
     ],
   },
 };

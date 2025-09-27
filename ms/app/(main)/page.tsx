@@ -3,6 +3,7 @@
 import HeroSection from "@/components/HeroSection";
 import PlayerTester from "@/components/PlayerTester";
 import DocumentationSection from "@/components/DocumentationSection";
+import CommunitySection from "@/components/CommunitySection"; // NAMA IMPOR YANG BENAR
 
 interface ApiVideo { id: number; poster_url: string; category: string[]; }
 interface ApiResponse { list: ApiVideo[]; }
@@ -33,6 +34,7 @@ export default async function Home() {
       <HeroSection initialPosters={initialPosters} />
       <PlayerTester />
       <DocumentationSection />
+      <CommunitySection /> {/* NAMA KOMPONEN YANG BENAR */}
     </>
   );
 }
