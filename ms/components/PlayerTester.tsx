@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { FeatureCard } from './FeatureCard';
-import { Rocket, Library, WandSparkles, Copy, Check, Search, RefreshCw, Clapperboard } from 'lucide-react';
+import { Rocket, Library, WandSparkles, Copy, Check, Search, RefreshCw } from 'lucide-react';
 
 function debounce<T extends (...args: any[]) => void>(func: T, delay: number): (...args: Parameters<T>) => void {
   let timeoutId: NodeJS.Timeout | null = null;
@@ -13,8 +13,13 @@ function debounce<T extends (...args: any[]) => void>(func: T, delay: number): (
   };
 }
 
+// Tipe untuk metode pencarian
+type SearchMethod = 'code' | 'id';
+
 const PlayerTester = () => {
-  const [javId, setJavId] = useState('SSNI-123');
+  const [searchValue, setSearchValue] = useState('MIDA-321');
+  const [searchMethod, setSearchMethod] = useState<SearchMethod>('code');
+  
   const [generatedEmbedUrl, setGeneratedEmbedUrl] = useState('');
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -28,13 +33,18 @@ const PlayerTester = () => {
     setDomain(window.location.origin);
   }, []);
 
-  const fetchPreviewUrl = async (id: string) => {
-    if (!id) return;
+  const fetchPreviewUrl = async (value: string, method: SearchMethod) => {
+    if (!value) return;
     setIsLoading(true);
     setError(null);
     setPreviewSrc(null);
+
+    // Tentukan parameter API berdasarkan metode pencarian
+    const apiParam = method === 'code' ? 'wd' : 'ids';
+    const apiUrl = `https://avdbapi.com/api.php/provide/vod/?ac=detail&${apiParam}=${value}`;
+
     try {
-      const response = await fetch(`https://avdbapi.com/api.php/provide/vod/?ac=detail&wd=${id}`);
+      const response = await fetch(apiUrl);
       if (!response.ok) throw new Error('API request failed.');
       const data = await response.json();
       if (data.list && data.list.length > 0) {
@@ -45,7 +55,7 @@ const PlayerTester = () => {
           throw new Error('Embed link not found in API response.');
         }
       } else {
-        throw new Error(`No results found for ID: ${id}`);
+        throw new Error(`No results found for ${method}: ${value}`);
       }
     } catch (err: any) {
       setError(err.message);
@@ -58,12 +68,13 @@ const PlayerTester = () => {
   const debouncedFetch = useCallback(debounce(fetchPreviewUrl, 500), []);
 
   useEffect(() => {
-    if (isClient && javId) {
-      const urlPath = `/embed/code/${javId}`;
+    if (isClient && searchValue) {
+      // Buat URL embed kita sendiri berdasarkan metode pencarian
+      const urlPath = `/embed/${searchMethod}/${searchValue}`;
       setGeneratedEmbedUrl(`${domain}${urlPath}`);
-      debouncedFetch(javId);
+      debouncedFetch(searchValue, searchMethod);
     }
-  }, [isClient, domain, javId, debouncedFetch]);
+  }, [isClient, domain, searchValue, searchMethod, debouncedFetch]);
   
   const handleCopy = () => {
     if (!generatedEmbedUrl) return;
@@ -72,18 +83,45 @@ const PlayerTester = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleMethodChange = (method: SearchMethod) => {
+    setSearchMethod(method);
+    // Ganti nilai contoh saat tab diubah
+    if (method === 'code') {
+      setSearchValue('MIDA-321');
+    } else {
+      setSearchValue('421077');
+    }
+  };
+
   return (
     <section id="player-tester" className="flex max-w-[70rem] flex-col items-center w-full min-h-screen gap-4 p-4">
-      <div className="flex flex-col gap-2 mt-20 text-center w-full max-w-2xl">
+      <div className="flex flex-col gap-4 mt-20 text-center w-full max-w-2xl">
         <h2 className="text-3xl font-bold">Test The Player</h2>
-        <p className="text-gray-400">Enter a JAV ID Code to see a live preview of the original player.</p>
-        <div className="relative w-full mt-4">
+        <p className="text-gray-400">Enter a JAV ID Code or Numeric ID to generate an embed link and see a live preview.</p>
+        
+        {/* TAB PEMILIHAN METODE */}
+        <div className="flex justify-center p-1 bg-white/5 rounded-full mt-4">
+          <button 
+            onClick={() => handleMethodChange('code')}
+            className={`px-6 py-2 text-sm font-medium rounded-full transition-colors ${searchMethod === 'code' ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:bg-white/5'}`}
+          >
+            By Code
+          </button>
+          <button 
+            onClick={() => handleMethodChange('id')}
+            className={`px-6 py-2 text-sm font-medium rounded-full transition-colors ${searchMethod === 'id' ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:bg-white/5'}`}
+          >
+            By ID
+          </button>
+        </div>
+
+        <div className="relative w-full mt-2">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
           <input
             type="text"
-            value={javId}
-            onChange={(e) => setJavId(e.target.value)}
-            placeholder="e.g., SSNI-123"
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            placeholder={searchMethod === 'code' ? 'e.g., MIDA-321' : 'e.g., 421077'}
             className="w-full h-12 pl-12 pr-4 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
           />
         </div>
@@ -119,33 +157,11 @@ const PlayerTester = () => {
       </div>
 
       <div className="flex flex-col w-full gap-4 my-16">
-        {/* GUNAKAN GRID YANG LEBIH FLEKSIBEL UNTUK MENAMPUNG LEBIH BANYAK KARTU */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <FeatureCard
-            icon={<Rocket className="w-5 h-5" />}
-            title="Easy to Use"
-            description="Intuitive and simple. Just enter the JAV ID to generate a link and embed it."
-            colorClasses="bg-indigo-500/10 text-indigo-500"
-          />
-          <FeatureCard
-            icon={<Library className="w-5 h-5" />}
-            title="Huge Library"
-            description="Access a massive library of content, updated daily to provide the latest videos."
-            colorClasses="bg-blue-500/10 text-blue-500"
-          />
-          <FeatureCard
-            icon={<WandSparkles className="w-5 h-5" />}
-            title="Customizable"
-            description="Customize the player to your needs using simple query parameters in the URL."
-            colorClasses="bg-pink-500/10 text-pink-500"
-          />
-          {/* KARTU YANG HILANG SEKARANG DITAMBAHKAN */}
-          <FeatureCard
-            icon={<RefreshCw className="w-5 h-5" />}
-            title="Auto Update"
-            description="New content is added every day and is available instantly through our API."
-            colorClasses="bg-purple-500/10 text-purple-500"
-          />
+          <FeatureCard icon={<Rocket className="w-5 h-5" />} title="Easy to Use" description="Intuitive and simple. Just enter the JAV ID to generate a link and embed it." colorClasses="bg-indigo-500/10 text-indigo-500" />
+          <FeatureCard icon={<Library className="w-5 h-5" />} title="Huge Library" description="Access a massive library of content, updated daily to provide the latest videos." colorClasses="bg-blue-500/10 text-blue-500" />
+          <FeatureCard icon={<WandSparkles className="w-5 h-5" />} title="Customizable" description="You can customize the player to your needs using simple query parameters in the URL." colorClasses="bg-pink-500/10 text-pink-500" />
+          <FeatureCard icon={<RefreshCw className="w-5 h-5" />} title="Auto Update" description="New content is added every day and is available instantly through our API." colorClasses="bg-purple-500/10 text-purple-500" />
         </div>
       </div>
     </section>
