@@ -11,7 +11,6 @@ const DocumentationSection = () => {
         <div className="flex-1 h-px bg-gradient-to-r from-white/20 to-transparent"></div>
       </div>
 
-      {/* Bagian ini sekarang menjadi satu-satunya konten */}
       <div className="flex flex-col items-start justify-start w-full gap-4 text-left">
         <DocsCard
           title="Embed JAV by Code"
@@ -21,14 +20,12 @@ const DocumentationSection = () => {
         />
         <DocsCard
           title="Embed JAV by ID"
-          description="Use the numeric ID from the source database."
+          // UBAH DESKRIPSI DI SINI
+          description="Use the numeric ID from the source database for a specific video."
           urlPath="/embed/id/{numeric_id}"
           examplePath="/embed/id/421077"
         />
       </div>
-
-      {/* Bagian "JAV Embed API Reference" dan tabelnya telah dihapus sepenuhnya */}
-      
     </section>
   );
 };

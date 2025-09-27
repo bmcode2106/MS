@@ -3,23 +3,15 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { FeatureCard } from './FeatureCard';
-import { Rocket, Library, WandSparkles, Copy, Check, Search } from 'lucide-react';
+import { Rocket, Library, WandSparkles, Copy, Check, Search, RefreshCw, Clapperboard } from 'lucide-react';
 
-// HAPUS SEMUA 'import' DARI LODASH
-
-// BUAT FUNGSI DEBOUNCE KITA SENDIRI DI SINI
 function debounce<T extends (...args: any[]) => void>(func: T, delay: number): (...args: Parameters<T>) => void {
   let timeoutId: NodeJS.Timeout | null = null;
   return function(...args: Parameters<T>) {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-    timeoutId = setTimeout(() => {
-      func(...args);
-    }, delay);
+    if (timeoutId) { clearTimeout(timeoutId); }
+    timeoutId = setTimeout(() => { func(...args); }, delay);
   };
 }
-
 
 const PlayerTester = () => {
   const [javId, setJavId] = useState('SSNI-123');
@@ -41,11 +33,9 @@ const PlayerTester = () => {
     setIsLoading(true);
     setError(null);
     setPreviewSrc(null);
-
     try {
       const response = await fetch(`https://avdbapi.com/api.php/provide/vod/?ac=detail&wd=${id}`);
       if (!response.ok) throw new Error('API request failed.');
-      
       const data = await response.json();
       if (data.list && data.list.length > 0) {
         const linkEmbed = data.list[0].episodes?.server_data?.Full?.link_embed;
@@ -74,7 +64,6 @@ const PlayerTester = () => {
       debouncedFetch(javId);
     }
   }, [isClient, domain, javId, debouncedFetch]);
-
   
   const handleCopy = () => {
     if (!generatedEmbedUrl) return;
@@ -130,24 +119,32 @@ const PlayerTester = () => {
       </div>
 
       <div className="flex flex-col w-full gap-4 my-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* GUNAKAN GRID YANG LEBIH FLEKSIBEL UNTUK MENAMPUNG LEBIH BANYAK KARTU */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <FeatureCard
             icon={<Rocket className="w-5 h-5" />}
             title="Easy to Use"
-            description="Intuitive and simple. Just enter the JAV ID and embed the generated link into your website."
+            description="Intuitive and simple. Just enter the JAV ID to generate a link and embed it."
             colorClasses="bg-indigo-500/10 text-indigo-500"
           />
           <FeatureCard
             icon={<Library className="w-5 h-5" />}
             title="Huge Library"
-            description="With content sourced directly from avdbapi.com, we have it all. Updated daily."
+            description="Access a massive library of content, updated daily to provide the latest videos."
             colorClasses="bg-blue-500/10 text-blue-500"
           />
           <FeatureCard
             icon={<WandSparkles className="w-5 h-5" />}
             title="Customizable"
-            description="You can customize the player to your needs using simple query parameters in the URL."
+            description="Customize the player to your needs using simple query parameters in the URL."
             colorClasses="bg-pink-500/10 text-pink-500"
+          />
+          {/* KARTU YANG HILANG SEKARANG DITAMBAHKAN */}
+          <FeatureCard
+            icon={<RefreshCw className="w-5 h-5" />}
+            title="Auto Update"
+            description="New content is added every day and is available instantly through our API."
+            colorClasses="bg-purple-500/10 text-purple-500"
           />
         </div>
       </div>
