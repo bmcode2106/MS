@@ -1,4 +1,4 @@
-// file: app/embed/code/[id]/page.tsx
+// file: app/(embed)/embed/code/[id]/page.tsx
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -70,10 +70,8 @@ export default function EmbedPlayerPage() {
       setShowPlayer(true);
       return;
     }
-
     const newClickCount = clickCount + 1;
     setClickCount(newClickCount);
-
     if (config?.ads.enabled && newClickCount >= config.ads.clicks_needed) {
       const script = document.createElement('script');
       script.src = config.ads.ad_tag_script_url;
@@ -81,18 +79,15 @@ export default function EmbedPlayerPage() {
       document.body.appendChild(script);
       setAdShown(true);
     }
-    
     setShowPlayer(true);
   };
   
   if (isLoading) {
     return <div className="w-screen h-screen bg-black flex items-center justify-center text-gray-500">Loading Player...</div>;
   }
-
   if (error) {
     return <div className="w-screen h-screen bg-black flex items-center justify-center text-red-500 p-4 text-center">{error}</div>;
   }
-
   if (showPlayer && videoData?.link_embed) {
     return (
       <iframe
@@ -111,10 +106,19 @@ export default function EmbedPlayerPage() {
       onClick={handlePosterClick}
       style={{ backgroundImage: `url(${videoData?.poster_url})` }}
     >
-      <div className="w-full h-full flex items-center justify-center bg-black/50 backdrop-blur-sm hover:bg-black/30 transition-colors">
-        <svg className="w-24 h-24 text-white/70" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" />
-        </svg>
+      {/* UBAH backdrop-blur-sm MENJADI backdrop-blur-[2px] */}
+      <div className="w-full h-full flex items-center justify-center bg-black/40 backdrop-blur-[2px] hover:bg-black/20 transition-all duration-300 group">
+        <div className="relative w-20 h-20 md:w-24 md:h-24 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
+          <div className="absolute inset-0 bg-black/40 rounded-full"></div>
+          <svg 
+            className="relative w-1/2 h-1/2 text-white/80" 
+            viewBox="0 0 24 24" 
+            fill="currentColor"
+            style={{ filter: 'drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.5))' }}
+          >
+            <path d="M6.3 20.7L18 12 6.3 3.3v17.4z" />
+          </svg>
+        </div>
       </div>
     </div>
   );
